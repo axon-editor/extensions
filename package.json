@@ -1,0 +1,13 @@
+{
+  "name": "axon-extensions-marketplace",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Community extension packages for Axon, served to the editor through a hosted registry.json",
+  "type": "module",
+  "scripts": {
+    "build:registry": "node tools/build-registry.mjs"
+  },
+  "devDependencies": {
+    "adm-zip": "^0.5.16"
+  }
+}

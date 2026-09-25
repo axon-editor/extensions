@@ -1,0 +1,23 @@
+{
+  "$schema": "https://axoneditor.com/schemas/extension/v0.1.0.json",
+  "id": "axon.snake",
+  "name": "Snake",
+  "publisher": "axon",
+  "version": "1.0.0",
+  "description": "A classic Snake game that runs in an Axon editor tab.",
+  "kind": "view",
+  "author": "Axon Editor Group",
+  "repository": "https://github.com/axon-editor/extensions",
+  "homepage": "https://github.com/axon-editor/extensions",
+  "categories": ["game", "fun"],
+  "tags": ["game", "arcade"],
+  "activationEvents": ["onStartup"],
+  "contributes": {
+    "commands": [
+      {
+        "id": "axon.snake.open",
+        "title": "Open Snake"
+      }
+    ]
+  }
+}

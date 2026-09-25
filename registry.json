@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-25T02:31:09.462Z",
+  "extensions": [
+    {
+      "id": "axon.snake",
+      "name": "Snake",
+      "publisher": "axon",
+      "version": "1.0.0",
+      "description": "A classic Snake game that runs in an Axon editor tab.",
+      "kind": "view",
+      "source": "marketplace",
+      "repositoryUrl": "https://github.com/axon-editor/extensions",
+      "homepageUrl": "https://github.com/axon-editor/extensions",
+      "packageUrl": "https://raw.githubusercontent.com/axon-editor/extensions/main/dist/axon.snake-1.0.0.zip",
+      "installMode": "download",
+      "categories": [
+        "game",
+        "fun"
+      ],
+      "tags": [
+        "game",
+        "arcade"
+      ],
+      "sha256": "bf78fff2f764ab376ca4a3485c2dc4a3cce05487a8e46722d2e1858abc78b4d5",
+      "size": 3918
+    }
+  ]
+}

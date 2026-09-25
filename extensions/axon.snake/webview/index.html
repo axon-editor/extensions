@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Snake</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <div class="hud">
+        <div class="score">
+          <span class="label">Score</span>
+          <span id="score" class="value">0</span>
+        </div>
+        <div class="score">
+          <span class="label">Best</span>
+          <span id="best" class="value">0</span>
+        </div>
+        <div class="hint">
+          <kbd>&#8592;</kbd><kbd>&#8593;</kbd><kbd>&#8595;</kbd><kbd>&#8594;</kbd>
+          <span>or</span>
+          <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+        </div>
+      </div>
+      <canvas id="board" width="480" height="480" aria-label="Snake game board"></canvas>
+      <div id="overlay" class="overlay">
+        <p class="title">Snake</p>
+        <p id="message" class="message"></p>
+        <button id="start" type="button">Play</button>
+      </div>
+    </main>
+    <script src="game.js"></script>
+  </body>
+</html>
