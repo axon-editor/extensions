@@ -26,9 +26,15 @@ body {
 
 .hud {
   display: flex;
-  align-items: center;
-  gap: 24px;
+  flex-direction: column;
+  gap: 10px;
   width: 480px;
+}
+
+.hud-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
 }
 
 .score {
@@ -51,13 +57,33 @@ body {
   color: #58a6ff;
 }
 
-.hint {
+.legend {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.gold-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #f2cc60;
+  box-shadow: 0 0 6px rgba(242, 204, 96, 0.6);
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   font-size: 12px;
   color: #8b949e;
+}
+
+.hint .sep {
+  margin: 0 4px;
+  opacity: 0.65;
 }
 
 kbd {
@@ -74,6 +100,10 @@ kbd {
   color: #c9d1d9;
 }
 
+.board-wrap {
+  position: relative;
+}
+
 #board {
   display: block;
   border-radius: 8px;
@@ -84,11 +114,13 @@ kbd {
 
 .overlay {
   position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12px;
+  border-radius: 8px;
   background: rgba(1, 4, 9, 0.72);
   backdrop-filter: blur(3px);
 }
@@ -102,7 +134,9 @@ kbd {
 }
 
 .overlay .message {
+  max-width: 320px;
   margin: 0;
+  text-align: center;
   font-size: 14px;
   color: #8b949e;
 }

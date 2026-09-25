@@ -13,12 +13,22 @@ Chase the red squares, grow the snake, and avoid the walls and yourself.
    command in the command palette (`⇧⌘P`), or from the game webview tab once
    it has been opened.
 
+## Gameplay
+
+|                 |                 |
+| :-------------: | :-------------: |
+| ![game 1](screenshots/shot-1.png) | ![game 2](screenshots/shot-2.png) |
+| ![game 3](screenshots/shot-3.png) | ![game 4](screenshots/shot-4.png) |
+
 ## How to play
 
 - **Move** — arrow keys or `W` `A` `S` `D`
 - **Start / restart** — `Space` or `Enter`
 - Eating a red **apple** grows the snake and increases your score.
-- Hitting a **wall** or your own **tail** ends the run.
+- Eating a golden **bonus apple** (+5) awards extra points before it expires.
+- Watch out for **obstacles** — they appear as you score and the snake must
+  slither around them.
+- Hitting a **wall**, an **obstacle**, or your own **tail** ends the run.
 - Your **best score** is remembered across sessions.
 
 ## Source

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-25T13:44:39.206Z",
+  "generatedAt": "2026-09-25T14:10:16.458Z",
   "extensions": [
     {
       "id": "axon.snake",
@@ -22,8 +22,8 @@
         "game",
         "arcade"
       ],
-      "sha256": "efee724b9c9cc729f648adecf4631d685448fcab3a5a2236f56b34800f5404a2",
-      "size": 4557
+      "sha256": "126f3b1ddec87ae76b436019b13b3838a187c4ded804327a27965509da3c867c",
+      "size": 445712
     }
   ]
 }
