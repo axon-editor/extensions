@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-09-25T14:10:16.458Z",
+  "generatedAt": "2026-09-25T15:43:22.893Z",
   "extensions": [
     {
       "id": "axon.snake",
@@ -23,7 +23,8 @@
         "arcade"
       ],
       "sha256": "126f3b1ddec87ae76b436019b13b3838a187c4ded804327a27965509da3c867c",
-      "size": 445712
+      "size": 445712,
+      "readme": "# Snake\n\nA classic Snake arcade game that runs right inside an Axon editor tab.\n\nChase the red squares, grow the snake, and avoid the walls and yourself.\n\n## Install\n\n1. Open the Extensions view in Axon (`⇧⌘X`).\n2. Switch to the **Downloads** tab.\n3. Find **Snake** and press **Install**.\n4. Open the game from the Extensions view (`Open`), via the **Open Snake**\n   command in the command palette (`⇧⌘P`), or from the game webview tab once\n   it has been opened.\n\n## Gameplay\n\n|                 |                 |\n| :-------------: | :-------------: |\n| ![game 1](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.snake/screenshots/shot-1.png) | ![game 2](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.snake/screenshots/shot-2.png) |\n| ![game 3](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.snake/screenshots/shot-3.png) | ![game 4](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.snake/screenshots/shot-4.png) |\n\n## How to play\n\n- **Move** — arrow keys or `W` `A` `S` `D`\n- **Start / restart** — `Space` or `Enter`\n- Eating a red **apple** grows the snake and increases your score.\n- Eating a golden **bonus apple** (+5) awards extra points before it expires.\n- Watch out for **obstacles** — they appear as you score and the snake must\n  slither around them.\n- Hitting a **wall**, an **obstacle**, or your own **tail** ends the run.\n- Your **best score** is remembered across sessions.\n\n## Source\n\nPart of the [axon-editor/extensions](https://github.com/axon-editor/extensions/tree/main/extensions) marketplace, in the\n[axon.snake](https://github.com/axon-editor/extensions/tree/main/extensions/axon.snake) folder.\nPublished by the Axon Editor Group."
     }
   ]
 }

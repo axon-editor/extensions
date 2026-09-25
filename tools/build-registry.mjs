@@ -97,6 +97,45 @@ function collectFiles(root, prefix = "") {
   ).then((groups) => groups.flat());
 }
 
+// The Downloads view renders the README of a package that is not installed
+// yet, so it has no local folder to read images from. Every relative image and
+// link target is rewritten to its raw.githubusercontent.com equivalent, which the
+// editor already allowlists for package downloads. Without this the pre-install
+// README would render with broken images.
+const README_CANDIDATES = ["README.md", "readme.md", "readme.markdown", "README.txt"];
+const RELATIVE_TARGET_PATTERN = /(!?\[[^\]]*\]\(|<img\s[^>]*src="|<video\s[^>]*src="|src=")(?!https?:|mailto:|tel:|#|\/\/)([^"')]+)(["')])/g;
+
+function absolutizeReadme(readme, id) {
+  return readme.replace(
+    RELATIVE_TARGET_PATTERN,
+    (match, prefix, target, suffix) => {
+      const cleaned = target.split("#")[0].split("?")[0];
+      if (cleaned === "") return match;
+      const base = `${RAW_BASE_URL}/extensions/${id}`;
+      const absolute = cleaned.startsWith("/")
+        ? `${RAW_BASE_URL}${cleaned}`
+        : `${base}/${cleaned}`;
+      const [pathPart, ...rest] = target.split("#");
+      const fragment = rest.length > 0 ? `#${rest.join("#")}` : "";
+      return `${prefix}${absolute}${fragment}${suffix}`;
+    },
+  );
+}
+
+async function readReadme(extensionPath, id) {
+  for (const candidate of README_CANDIDATES) {
+    try {
+      const readme = await readFile(path.join(extensionPath, candidate), "utf-8");
+      if (readme.trim() === "") continue;
+      return absolutizeReadme(readme.replace(/^\uFEFF/, ""), id);
+    } catch (err) {
+      if (err?.code === "ENOENT") continue;
+      throw err;
+    }
+  }
+  return undefined;
+}
+
 async function buildPackage(extensionPath) {
   const manifestPath = path.join(extensionPath, "axon.extension.json");
   const raw = JSON.parse(await readFile(manifestPath, "utf-8"));
@@ -146,6 +185,7 @@ async function buildPackage(extensionPath) {
     icon: typeof raw.icon === "string" ? raw.icon : undefined,
     sha256,
     size: archiveStats.size,
+    readme: await readReadme(sourceFolder, id),
   };
 }
 
