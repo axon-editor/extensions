@@ -5,7 +5,8 @@
   "description": "Community extension packages for Axon, served to the editor through a hosted registry.json",
   "type": "module",
   "scripts": {
-    "build:registry": "node tools/build-registry.mjs"
+    "build:registry": "node tools/build-registry.mjs",
+    "test": "node --test \"extensions/axon.snake/tests/*.test.js\""
   },
   "devDependencies": {
     "adm-zip": "^0.5.16"

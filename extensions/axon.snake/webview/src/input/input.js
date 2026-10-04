@@ -14,7 +14,6 @@ const MOVE_KEYS = {
 };
 
 const SWIPE_THRESHOLD_PX = 24;
-const TAP_MAX_PX = 8;
 
 // Owns every input path: arrow keys and WASD steer, Space/Enter (or a tap)
 // starts, pauses, and resumes, and swipe gestures drive the snake.
@@ -35,7 +34,12 @@ export function createInput({ onDirection, onToggleRun, element }) {
   }
 
   function handlePointerDown(event) {
+    if (event.isPrimary === false) return;
     pointerOrigin = { x: event.clientX, y: event.clientY };
+  }
+
+  function handlePointerCancel() {
+    pointerOrigin = null;
   }
 
   function handlePointerUp(event) {
@@ -45,11 +49,12 @@ export function createInput({ onDirection, onToggleRun, element }) {
     pointerOrigin = null;
 
     const magnitude = Math.max(Math.abs(deltaX), Math.abs(deltaY));
-    if (magnitude < TAP_MAX_PX) {
+    // Anything short of a swipe counts as a tap. An earlier minimum distance
+    // left a dead band where a slightly shaky click did nothing at all.
+    if (magnitude < SWIPE_THRESHOLD_PX) {
       onToggleRun();
       return;
     }
-    if (magnitude < SWIPE_THRESHOLD_PX) return;
 
     if (Math.abs(deltaX) >= Math.abs(deltaY)) {
       onDirection({ x: deltaX > 0 ? 1 : -1, y: 0 });
@@ -63,11 +68,13 @@ export function createInput({ onDirection, onToggleRun, element }) {
       document.addEventListener("keydown", handleKey);
       element.addEventListener("pointerdown", handlePointerDown);
       element.addEventListener("pointerup", handlePointerUp);
+      element.addEventListener("pointercancel", handlePointerCancel);
     },
     detach() {
       document.removeEventListener("keydown", handleKey);
       element.removeEventListener("pointerdown", handlePointerDown);
       element.removeEventListener("pointerup", handlePointerUp);
+      element.removeEventListener("pointercancel", handlePointerCancel);
     },
   };
 }

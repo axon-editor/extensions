@@ -96,9 +96,16 @@ export function createGame({ canvas, elements }) {
     }
 
     const head = snake.nextHead();
+    const eatenPosition = food.position;
+    const eats = eatenPosition !== null &&
+      eatenPosition.x === head.x &&
+      eatenPosition.y === head.y;
+
     const hitWall =
       head.x < 0 || head.x >= CELLS || head.y < 0 || head.y >= CELLS;
-    const hitSelf = snake.wouldHitSelf(head);
+    // The tail only counts as solid when this tick grows the snake, so the
+    // collision test has to know whether food is being eaten.
+    const hitSelf = snake.wouldHitSelf(head, eats);
     const hitBlock = obstacles.blocks.some(
       (block) => block.x === head.x && block.y === head.y,
     );
@@ -108,10 +115,6 @@ export function createGame({ canvas, elements }) {
       return;
     }
 
-    const eatenPosition = food.position;
-    const eats = eatenPosition !== null &&
-      eatenPosition.x === head.x &&
-      eatenPosition.y === head.y;
     snake.step(head, eats);
 
     if (eats) {

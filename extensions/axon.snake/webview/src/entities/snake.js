@@ -30,9 +30,13 @@ export function createSnake(startCells) {
     },
 
     setDirection(next) {
+      // Only the turn that the next step will actually consume may be queued.
+      // Validating against the queued turn instead lets two quick presses
+      // compose into a reversal, which walks the head into its own neck.
       const current = state.pendingDirection ?? state.direction;
       const reverse = { x: -current.x, y: -current.y };
       if (vecEq(next, reverse)) return;
+      if (state.pendingDirection) return;
       state.pendingDirection = { x: next.x, y: next.y };
     },
 
@@ -42,8 +46,11 @@ export function createSnake(startCells) {
       return { x: head.x + direction.x, y: head.y + direction.y };
     },
 
-    wouldHitSelf(cell) {
-      return state.cells.some((candidate) => vecEq(candidate, cell));
+    wouldHitSelf(cell, grow) {
+      // The tail vacates its cell on the same tick unless the snake grows, so
+      // chasing it is a legal move and only counts as a crash while growing.
+      const occupied = grow ? state.cells : state.cells.slice(1);
+      return occupied.some((candidate) => vecEq(candidate, cell));
     },
 
     step(nextHead, grow) {
