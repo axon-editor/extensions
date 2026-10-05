@@ -26,10 +26,14 @@ export function createSession({ onScore, onLives, onState } = {}) {
 
   // Zero-thickness rects sitting exactly on the playfield edges. Built here rather
   // than exported from config so the physics owns the same numbers the board does.
+  // Zero-thickness rects sitting exactly on the playfield edges, each carrying the
+  // inward normal explicitly. The normal cannot be derived from the ball's position
+  // on a zero-thickness wall: once the ball is on the far side the derived sign flips
+  // and points back out, so the wall would keep pushing a ball that already left.
   const walls = [
-    { kind: "left", x: 0, y: 0, left: 0, top: 0, right: 0, bottom: BOARD_PX, width: 0, height: BOARD_PX },
-    { kind: "right", x: BOARD_PX, y: 0, left: BOARD_PX, top: 0, right: BOARD_PX, bottom: BOARD_PX, width: 0, height: BOARD_PX },
-    { kind: "ceiling", x: 0, y: 0, left: 0, top: 0, right: BOARD_PX, bottom: 0, width: BOARD_PX, height: 0 },
+    { kind: "left", x: 0, y: BOARD_PX / 2, nx: 1, ny: 0 },
+    { kind: "right", x: BOARD_PX, y: BOARD_PX / 2, nx: -1, ny: 0 },
+    { kind: "ceiling", x: BOARD_PX / 2, y: 0, nx: 0, ny: 1 },
   ];
 
   let state = "idle";

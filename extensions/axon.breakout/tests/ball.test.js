@@ -13,10 +13,13 @@ import { createWall } from "../webview/src/entities/bricks.js";
 
 const FRAME = 1 / 60;
 
+// Zero-thickness planes with an explicit inward normal, matching what session.js
+// hands the ball. The normal has to be stated rather than derived, so the shape here
+// is a point on the edge plus a direction and not a rect.
 const walls = () => ([
-  { kind: "left", left: 0, right: 0, top: 0, bottom: BOARD_PX, width: 0, height: BOARD_PX },
-  { kind: "right", left: BOARD_PX, right: BOARD_PX, top: 0, bottom: BOARD_PX, width: 0, height: BOARD_PX },
-  { kind: "ceiling", left: 0, right: BOARD_PX, top: 0, bottom: 0, width: BOARD_PX, height: 0 },
+  { kind: "left", x: 0, y: BOARD_PX / 2, nx: 1, ny: 0 },
+  { kind: "right", x: BOARD_PX, y: BOARD_PX / 2, nx: -1, ny: 0 },
+  { kind: "ceiling", x: BOARD_PX / 2, y: 0, nx: 0, ny: 1 },
 ]);
 
 // Fires the ball downward at a known speed so a single frame's travel is exact.
@@ -200,4 +203,100 @@ test("a zero speed ball never reports a hit", () => {
   ball.holdOn(createPaddle());
   const brick = createWall().bricks[0];
   assert.deepEqual(ball.step(FRAME, { walls: walls(), bricks: [brick] }), []);
+});
+
+test("a ball past the left wall is pushed back inside", () => {
+  // The normal used to be derived from the ball's own position, which flipped once the
+  // ball was outside the wall and told it to keep going. The wall has to recover a
+  // ball from either side or the ball leaves the board and never comes back.
+  const ball = createBall();
+  ball.setPosition(-BALL_RADIUS + 2, 200);
+  ball.setVelocity(-1, -0.2, 300);
+
+  ball.step(FRAME, { walls: walls() });
+
+  assert.ok(ball.x >= BALL_RADIUS - 1e-9,
+    `the ball must be pushed back inside, was at x=${ball.x}`);
+});
+
+test("a ball past the right wall is pushed back inside", () => {
+  const ball = createBall();
+  ball.setPosition(BOARD_PX + BALL_RADIUS - 2, 200);
+  ball.setVelocity(1, -0.2, 300);
+
+  ball.step(FRAME, { walls: walls() });
+
+  assert.ok(ball.x <= BOARD_PX - BALL_RADIUS + 1e-9,
+    `the ball must be pushed back inside, was at x=${ball.x}`);
+});
+
+test("a ball clipping the paddle's right tip does not leave the board", () => {
+  // The reported bug. A corner hit used to resolve against the paddle's end cap, which
+  // shoved the ball sideways into the right wall, and the wall shoved it back into the
+  // cap on the next sub-step until the ball walked out through the wall.
+  const paddle = createPaddle();
+  paddle.setProgress(20, 60);
+  paddle.follow(BOARD_PX);
+
+  const ball = createBall();
+  ball.setPosition(BOARD_PX - 12, paddle.top - 20);
+  ball.setVelocity(1, 1, MAX_SPEED_PX_PER_S);
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    paddle.follow(BOARD_PX);
+    for (const hit of ball.step(FRAME, { walls: walls(), paddle: paddle.bounds })) {
+      if (hit.kind === "paddle") ball.steerFromPaddle(hit.offset);
+    }
+    assert.ok(ball.x <= BOARD_PX && ball.x >= 0,
+      `the ball left the board on frame ${frame} at x=${ball.x}`);
+  }
+});
+
+test("a ball clipping the paddle's left tip does not leave the board", () => {
+  const paddle = createPaddle();
+  paddle.setProgress(20, 60);
+  paddle.follow(0);
+
+  const ball = createBall();
+  ball.setPosition(12, paddle.top - 20);
+  ball.setVelocity(-1, 1, MAX_SPEED_PX_PER_S);
+
+  for (let frame = 0; frame < 60; frame += 1) {
+    paddle.follow(0);
+    for (const hit of ball.step(FRAME, { walls: walls(), paddle: paddle.bounds })) {
+      if (hit.kind === "paddle") ball.steerFromPaddle(hit.offset);
+    }
+    assert.ok(ball.x <= BOARD_PX && ball.x >= 0,
+      `the ball left the board on frame ${frame} at x=${ball.x}`);
+  }
+});
+
+test("a ball arriving beside the paddle falls past it", () => {
+  // The end cap is not a surface, so a ball past the tip has to be allowed to drop. If
+  // the cap still bounced it, the ball would be rescued from a miss the player made.
+  const paddle = createPaddle();
+  paddle.setProgress(20, 60);
+
+  const ball = createBall();
+  ball.setPosition(paddle.right + BALL_RADIUS + 4, paddle.top - 20);
+  ball.setVelocity(1, 1, 300);
+
+  const hits = ball.step(FRAME, { walls: walls(), paddle: paddle.bounds });
+
+  assert.deepEqual(hits, [], "the paddle must not report a hit beside its tip");
+  assert.ok(ball.vy > 0, "the ball must keep falling");
+});
+
+test("a ball rising under the paddle is not lifted by it", () => {
+  // Only a descending ball can be caught. One already travelling up has been served
+  // or has passed through and must not be reflected back down onto the paddle.
+  const paddle = createPaddle();
+  const ball = createBall();
+  ball.setPosition(paddle.center, paddle.top + BALL_RADIUS - 1);
+  ball.setVelocity(0, -1, 300);
+
+  const hits = ball.step(FRAME, { walls: walls(), paddle: paddle.bounds });
+
+  assert.deepEqual(hits, [], "a rising ball must not report a paddle hit");
+  assert.ok(ball.vy < 0, "the ball must keep travelling upward");
 });

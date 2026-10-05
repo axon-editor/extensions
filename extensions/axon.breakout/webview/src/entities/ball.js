@@ -30,6 +30,38 @@ export function createBall() {
     held: true,
   };
 
+  // Circle versus an axis-aligned plane, resolved against the plane's own inward
+  // normal rather than against the ball's position. The sign of the offset cannot
+  // decide which way is inward here: for a zero-thickness wall a ball on the far
+  // side has a flipped offset, which would tell the wall to push it further out and
+  // let it leave the board for good. The normal is fixed, so this always recovers the
+  // ball no matter which side of the line it has drifted to.
+  //
+  // Returns the penetration depth, or 0 when the ball is clear of the line.
+  function penetrationIntoWall(wall) {
+    const offset = (state.x - wall.x) * wall.nx + (state.y - wall.y) * wall.ny;
+    return state.radius - offset;
+  }
+
+  function bounceOffWall(wall) {
+    const penetration = penetrationIntoWall(wall);
+    if (penetration <= 0) return false;
+
+    state.x += wall.nx * penetration;
+    state.y += wall.ny * penetration;
+
+    // Only a ball actually heading into the wall is reflected. One that has already
+    // been pushed clear is on its way out and must keep that velocity, or the
+    // reflection would reverse it and pin the ball against the wall.
+    const intoWall = state.vx * wall.nx + state.vy * wall.ny;
+    if (intoWall >= 0) return true;
+
+    state.vx -= 2 * intoWall * wall.nx;
+    state.vy -= 2 * intoWall * wall.ny;
+    constrainAngle();
+    return true;
+  }
+
   // Circle-versus-rectangle on the axis of least penetration. Resolving off the
   // nearest face instead sends a ball that clips a brick's corner back into the
   // wall it just came from, which is the classic breakout physics bug.
@@ -46,10 +78,10 @@ export function createBall() {
     return { nx: 0, ny: dy < 0 ? -1 : 1, penetration: overlapY };
   }
 
-  // Specular reflection about the surface normal. Using the dot product instead of
-  // flipping a component keeps the speed identical, so no collision can quietly
-  // slow the ball down.
-  function bounceOff(rect) {
+  // Specular reflection against a solid rect, used for bricks only. Using the dot
+  // product instead of flipping a component keeps the speed identical, so no
+  // collision can quietly slow the ball down.
+  function bounceOffBrick(rect) {
     const hit = circleVsRect(rect);
     if (!hit) return false;
 
@@ -77,6 +109,29 @@ export function createBall() {
 
     state.vx = vx * state.speed;
     state.vy = vy * state.speed;
+  }
+
+  // The paddle's top face only. The end caps are deliberately not surfaces: a ball
+  // clipping a corner resolves against whichever face is nearer, and near an end that
+  // is the cap, which shoves the ball sideways into the side wall. The wall then
+  // pushes it back into the cap on the next sub-step, and the pair walk the ball out
+  // through the wall. A ball arriving beside the paddle falls past it instead, which
+  // is the miss the player is supposed to be able to make.
+  function bounceOffPaddle(paddle) {
+    // Measured off the top edge as a plane, so a ball that has already sunk below the
+    // face cannot be lifted back out by the bounce.
+    const penetration = state.y + state.radius - paddle.top;
+    if (penetration <= 0) return false;
+
+    // Only across the span of the paddle, and only coming down onto it. A ball
+    // travelling up under the paddle is already past it and has to stay lost.
+    if (state.x < paddle.left || state.x > paddle.right) return false;
+    if (state.vy <= 0) return false;
+
+    state.y -= penetration;
+    state.vy = -state.vy;
+    constrainAngle();
+    return true;
   }
 
   return {
@@ -135,7 +190,7 @@ export function createBall() {
     },
 
     // Redirects off the point of contact on the paddle. offset is -1 at the left
-    // tip and 1 at the right, so a player can aim the ball by where they catch it.
+  // tip and 1 at the right, so a player can aim the ball by where they catch it.
     //
     // The offset is capped short of the tip because the vertical component is
     // derived from it, and a full -1 or 1 works out to a vertical of zero. That
@@ -162,18 +217,18 @@ export function createBall() {
         state.y += state.vy * sliceDt;
 
         for (const wall of world.walls ?? []) {
-          if (bounceOff(wall)) hits.push(wall.kind);
+          if (bounceOffWall(wall)) hits.push(wall.kind);
         }
 
         for (const brick of world.bricks ?? []) {
-          if (brick.alive && bounceOff(brick)) hits.push({ kind: "brick", brick });
+          if (brick.alive && bounceOffBrick(brick)) hits.push({ kind: "brick", brick });
         }
 
         const paddle = world.paddle;
-        if (paddle && bounceOff(paddle)) {
-          // Measured before steering so the redirect reflects where the ball
-          // actually landed on the paddle face.
-          const offset = (state.x - (paddle.x + paddle.width / 2)) / (paddle.width / 2);
+        if (paddle && bounceOffPaddle(paddle)) {
+          // Measured after the bounce so the offset reflects where the ball landed
+          // within the paddle's span, which is what decides the outgoing angle.
+          const offset = (state.x - (paddle.left + paddle.width / 2)) / (paddle.width / 2);
           hits.push({ kind: "paddle", offset });
         }
       }
