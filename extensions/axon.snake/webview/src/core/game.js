@@ -4,11 +4,14 @@ import {
   BASE_TICK_MS,
   BONUS_EVERY,
   BONUS_LIFETIME_MS,
+  BONUS_PARTICLE_COUNT,
   BONUS_SCORE,
   CELLS,
   COLORS,
+  CRASH_PARTICLE_COUNT,
   MIN_TICK_MS,
-  PIXEL_RATIO,
+  PARTICLE_COUNT,
+  START_LENGTH,
   TICK_STEP_MS,
 } from "./config.js";
 import { createFood } from "../entities/food.js";
@@ -30,7 +33,6 @@ export function createGame({ canvas, elements }) {
   const particles = createParticleSystem();
   const food = createFood();
   const obstacles = createObstacleField();
-  const cellPixels = canvas.width / PIXEL_RATIO / CELLS;
 
   let snake = createSnake(initialCells());
   let state = "idle";
@@ -41,6 +43,7 @@ export function createGame({ canvas, elements }) {
   let lastFrameAt = 0;
   let tickTimer = null;
   let frameId = null;
+  let stopPixelRatioWatch = null;
 
   const input = createInput({
     element: canvas,
@@ -50,11 +53,12 @@ export function createGame({ canvas, elements }) {
 
   function initialCells() {
     const center = Math.floor(CELLS / 2);
-    return [
-      { x: center - 2, y: center },
-      { x: center - 1, y: center },
-      { x: center, y: center },
-    ];
+    // Laid out behind the head so the opening move is always a straight run and
+    // START_LENGTH stays the single source of truth for the starting size.
+    return Array.from({ length: START_LENGTH }, (_, index) => ({
+      x: center - (START_LENGTH - 1) + index,
+      y: center,
+    }));
   }
 
   function setScore(next) {
@@ -64,8 +68,8 @@ export function createGame({ canvas, elements }) {
 
   function cellCenter(cell) {
     return {
-      x: (cell.x + 0.5) * cellPixels,
-      y: (cell.y + 0.5) * cellPixels,
+      x: (cell.x + 0.5) * renderer.cellPixels,
+      y: (cell.y + 0.5) * renderer.cellPixels,
     };
   }
 
@@ -121,8 +125,15 @@ export function createGame({ canvas, elements }) {
       const bonus = food.kind === "bonus";
       applesEaten += 1;
       setScore(score + (bonus ? BONUS_SCORE : 1));
-      emitBurst(eatenPosition, bonus ? COLORS.particleBonus : COLORS.particle, bonus ? 18 : 12);
+      emitBurst(
+        eatenPosition,
+        bonus ? COLORS.particleBonus : COLORS.particle,
+        bonus ? BONUS_PARTICLE_COUNT : PARTICLE_COUNT,
+      );
       placeFood(applesEaten % BONUS_EVERY === 0, BONUS_LIFETIME_MS);
+      // placeFood ends the run when the board is full. Bailing out here keeps
+      // scheduleTick from arming a timer for a game that is already over.
+      if (state !== "running") return;
       obstacles.sync(score, snake.cells, food.position);
     }
 
@@ -133,20 +144,26 @@ export function createGame({ canvas, elements }) {
     state = "over";
     if (tickTimer) clearTimeout(tickTimer);
 
-    const best = Math.max(readBest(), score);
+    // Read before writing, otherwise tying the stored best reads as beating it.
+    const previousBest = readBest();
+    const best = Math.max(previousBest, score);
     writeBest(best);
     elements.best.textContent = String(best);
+    const isNewBest = score > 0 && score > previousBest;
     elements.start.textContent = "Play again";
-    elements.message.textContent = `Game over. Score ${score}${score === best && score > 0 ? " — new best!" : ""}`;
+    elements.message.textContent =
+      `Game over. Score ${score}${isNewBest ? " — new best!" : ""}`;
     showOverlay();
 
-    const eatenPosition = food.position;
-    if (eatenPosition) emitBurst(eatenPosition, "#ff7b72", 14);
+    // The crash belongs at the head, not at the apple, which is often many cells
+    // away when the run ends on a wall or an obstacle.
+    emitBurst(snake.head(), COLORS.foodHighlight, CRASH_PARTICLE_COUNT);
   }
 
   function start() {
     snake = createSnake(initialCells());
     obstacles.reset();
+    particles.clear();
     applesEaten = 0;
     setScore(0);
     elements.best.textContent = String(readBest());
@@ -210,6 +227,8 @@ export function createGame({ canvas, elements }) {
   function init() {
     input.attach();
     elements.start.addEventListener("click", toggleRun);
+    window.addEventListener("resize", resize);
+    stopPixelRatioWatch = renderer.observePixelRatio();
     setScore(0);
     elements.best.textContent = String(readBest());
     elements.message.textContent = IDLE_MESSAGE;
@@ -219,9 +238,16 @@ export function createGame({ canvas, elements }) {
     frameId = requestAnimationFrame(frame);
   }
 
+  function resize() {
+    renderer.resize();
+  }
+
   function dispose() {
     if (tickTimer) clearTimeout(tickTimer);
     if (frameId) cancelAnimationFrame(frameId);
+    window.removeEventListener("resize", resize);
+    stopPixelRatioWatch?.();
+    elements.start.removeEventListener("click", toggleRun);
     input.detach();
   }
 

@@ -49,5 +49,11 @@ export function createParticleSystem() {
     ctx.globalAlpha = 1;
   }
 
-  return { emit, update, render };
+  // Dropped on restart, otherwise the crash burst from the previous run keeps
+  // drifting across the board that just replaced it.
+  function clear() {
+    particles.length = 0;
+  }
+
+  return { emit, update, render, clear };
 }

@@ -2,7 +2,6 @@
 
 // Board and pacing.
 export const CELLS = 24;
-export const PIXEL_RATIO = 2;
 export const BASE_TICK_MS = 150;
 export const MIN_TICK_MS = 70;
 export const TICK_STEP_MS = 4;
@@ -13,8 +12,18 @@ export const BONUS_EVERY = 5;
 export const BONUS_SCORE = 5;
 export const BONUS_LIFETIME_MS = 8000;
 
-// Obstacle rules: one wall block every OBSTACLE_EVERY score points.
+// Obstacle rules: one wall block every OBSTACLE_EVERY score points. A block is
+// kept OBSTACLE_HEAD_CLEARANCE cells away from the head on both axes so it can
+// never spawn on the snake, and OBSTACLE_PLACEMENT_ATTEMPTS random rolls give
+// up quietly when the board has no legal cell left.
 export const OBSTACLE_EVERY = 6;
+export const OBSTACLE_HEAD_CLEARANCE = 2;
+export const OBSTACLE_PLACEMENT_ATTEMPTS = 200;
+
+// Effects: burst sizes for an ordinary apple, a bonus apple, and a crash.
+export const PARTICLE_COUNT = 12;
+export const BONUS_PARTICLE_COUNT = 18;
+export const CRASH_PARTICLE_COUNT = 14;
 
 export const START_LENGTH = 3;
 
@@ -35,6 +44,7 @@ export const COLORS = {
   food: "#f85149",
   foodHighlight: "#ff7b72",
   bonus: "#f2cc60",
+  bonusHighlight: "#ffe9a3",
   bonusGlow: "rgba(242,204,96,0.35)",
   obstacle: "#2d333b",
   obstacleEdge: "#444c56",

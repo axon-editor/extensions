@@ -1,11 +1,16 @@
 "use strict";
 
-import { CELLS, OBSTACLE_EVERY } from "../core/config.js";
+import {
+  CELLS,
+  OBSTACLE_EVERY,
+  OBSTACLE_HEAD_CLEARANCE,
+  OBSTACLE_PLACEMENT_ATTEMPTS,
+} from "../core/config.js";
 import { cellKey, randomInt, vecEq } from "../core/utils.js";
 
-// Static wall blocks that appear as the score climbs. A new block never
-// touches the snake, the current food, or the two-cell radius in front of the
-// head, so a block cannot end a run the instant it spawns.
+// Static wall blocks that appear as the score climbs. A new block never touches
+// the snake, the current food, or the head's clearance square, so a block cannot
+// end a run the instant it spawns.
 export function createObstacleField() {
   let blocks = [];
   let lastMilestone = 0;
@@ -13,8 +18,12 @@ export function createObstacleField() {
   function placeBlock(snakeCells, foodCell) {
     const prohibited = snakeCells.map(cellKey);
     const head = snakeCells[snakeCells.length - 1];
-    for (let dy = -2; dy <= 2; dy += 1) {
-      for (let dx = -2; dx <= 2; dx += 1) {
+    // The clearance is a full square around the head, not just the cells ahead
+    // of it. A block is an instant loss the moment it appears, so leaving room
+    // to turn in any direction is the difference between a near miss and a
+    // death the player had no time to read.
+    for (let dy = -OBSTACLE_HEAD_CLEARANCE; dy <= OBSTACLE_HEAD_CLEARANCE; dy += 1) {
+      for (let dx = -OBSTACLE_HEAD_CLEARANCE; dx <= OBSTACLE_HEAD_CLEARANCE; dx += 1) {
         const nx = head.x + dx;
         const ny = head.y + dy;
         if (nx >= 0 && nx < CELLS && ny >= 0 && ny < CELLS) {
@@ -24,7 +33,7 @@ export function createObstacleField() {
     }
 
     const blocked = new Set(prohibited);
-    for (let attempt = 0; attempt < 200; attempt += 1) {
+    for (let attempt = 0; attempt < OBSTACLE_PLACEMENT_ATTEMPTS; attempt += 1) {
       const candidate = {
         x: randomInt(0, CELLS - 1),
         y: randomInt(0, CELLS - 1),

@@ -106,6 +106,15 @@ kbd {
 
 #board {
   display: block;
+  /* The renderer rewrites the backing store from devicePixelRatio, and the
+     width and height attributes become the layout size whenever they change.
+     Pinning the CSS box is what keeps the board from resizing itself every
+     time the window moves to a display with a different ratio. */
+  width: 480px;
+  height: 480px;
+  /* Swipes are steering input here, so the browser must not claim them for
+     scrolling, pinch zoom, or pull to refresh. */
+  touch-action: none;
   border-radius: 8px;
   background: #010409;
   border: 1px solid #30363d;
@@ -123,6 +132,10 @@ kbd {
   border-radius: 8px;
   background: rgba(1, 4, 9, 0.72);
   backdrop-filter: blur(3px);
+  /* The overlay covers the whole board and input is bound to the canvas, so
+     without this the overlay swallows every tap and swipe in the idle, paused,
+     and game over states. Only the button opts back in. */
+  pointer-events: none;
 }
 
 .overlay .title {
@@ -152,6 +165,7 @@ kbd {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease;
+  pointer-events: auto;
 }
 
 #start:hover {

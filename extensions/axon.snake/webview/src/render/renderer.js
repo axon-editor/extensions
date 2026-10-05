@@ -1,23 +1,50 @@
 "use strict";
 
-import { CELLS, COLORS, PIXEL_RATIO } from "../core/config.js";
+import { CELLS, COLORS } from "../core/config.js";
 import { clamp, easeInOut, lerp, roundRectPath, shade } from "../core/utils.js";
+
+// Used only when the host does not report a pixel ratio, so a 1x fallback never
+// turns into a half-size board.
+const FALLBACK_PIXEL_RATIO = 1;
 
 // All canvas painting. The snake segments are drawn between their previous and
 // current grid cells so movement stays smooth even at low tick rates.
 export function createRenderer(canvas) {
   const ctx = canvas.getContext("2d");
-  ctx.scale(PIXEL_RATIO, PIXEL_RATIO);
 
-  const logicalWidth = canvas.width / PIXEL_RATIO;
-  const cell = logicalWidth / CELLS;
-  const half = cell / 2;
+  // The backing store follows devicePixelRatio while the CSS box stays fixed, so
+  // the board is crisp on a HiDPI screen instead of being upscaled from a
+  // hardcoded pixel count. Reading the CSS box also keeps the logical size
+  // correct if the stylesheet ever changes the board width.
+  let logicalWidth = 0;
+  let logicalHeight = 0;
+  let cell = 0;
+  let half = 0;
   let snakeDirection = { x: 1, y: 0 };
   let now = 0;
 
+  resize();
+
+  function resize() {
+    const cssWidth = canvas.clientWidth || canvas.width;
+    const cssHeight = canvas.clientHeight || canvas.height;
+    const ratio = window.devicePixelRatio || FALLBACK_PIXEL_RATIO;
+
+    // Assigning width or height resets the context, so the transform has to be
+    // reapplied on every resize rather than once at construction.
+    canvas.width = Math.round(cssWidth * ratio);
+    canvas.height = Math.round(cssHeight * ratio);
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+    logicalWidth = cssWidth;
+    logicalHeight = cssHeight;
+    cell = cssWidth / CELLS;
+    half = cell / 2;
+  }
+
   function drawBackground() {
     ctx.fillStyle = COLORS.background;
-    ctx.fillRect(0, 0, logicalWidth, logicalWidth);
+    ctx.fillRect(0, 0, logicalWidth, logicalHeight);
 
     for (let y = 0; y < CELLS; y += 1) {
       for (let x = 0; x < CELLS; x += 1) {
@@ -176,12 +203,17 @@ export function createRenderer(canvas) {
 
   function drawSnake(snake, renderRatio) {
     const length = snake.cells.length;
+    // A head that just ate has no entry at its own index, because growth appends
+    // without shifting. It arrived from the previous head, so that cell is the
+    // correct origin. Falling back to the target instead makes the head jump a
+    // full cell every time the snake grows.
+    const grownHeadOrigin = snake.prevCells[snake.prevCells.length - 1];
+
     for (let index = length - 1; index >= 0; index -= 1) {
       const fromHead = length - 1 - index;
       const mix = clamp(fromHead / Math.max(1, length - 1), 0, 1);
       const target = snake.cells[index];
-      const previous =
-        index < snake.prevCells.length ? snake.prevCells[index] : target;
+      const previous = snake.prevCells[index] ?? grownHeadOrigin ?? target;
 
       const eased = easeInOut(renderRatio);
       const x = (lerp(previous.x, target.x, eased) + 0.5) * cell;
@@ -219,5 +251,39 @@ export function createRenderer(canvas) {
     particles.render(ctx);
   }
 
-  return { draw, drawParticles };
+  // A window drag between a HiDPI and a standard display changes the pixel ratio
+  // without changing the CSS box, so no resize event ever fires. Only a media
+  // query on the ratio itself notices, and without one the board keeps painting
+  // at the old ratio and goes soft on the new display.
+  function observePixelRatio() {
+    let query = null;
+
+    function handleChange() {
+      resize();
+      // The query that just fired no longer matches, so a fresh one has to take
+      // over the watch for the new ratio.
+      watch();
+    }
+
+    function watch() {
+      query?.removeEventListener("change", handleChange);
+      query = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+      query.addEventListener("change", handleChange);
+    }
+
+    watch();
+    return () => query?.removeEventListener("change", handleChange);
+  }
+
+  return {
+    draw,
+    drawParticles,
+    resize,
+    observePixelRatio,
+    // Read through the renderer rather than captured once, because resize()
+    // can change the cell size when the window moves between displays.
+    get cellPixels() {
+      return cell;
+    },
+  };
 }

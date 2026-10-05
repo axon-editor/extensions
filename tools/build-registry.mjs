@@ -84,13 +84,28 @@ function inferKind(manifest) {
   return "tool";
 }
 
+// Folders that belong in the repository but not in the installed package. The
+// Downloads view serves the README and its images straight from the repository
+// tree on raw.githubusercontent.com, so the screenshots never need to travel
+// inside the zip, and the tests are never read by the editor. Shipping them
+// roughly tripled the download size for every install.
+const EXCLUDED_DIRECTORIES = new Set([
+  "tests",
+  "screenshots",
+  "node_modules",
+  ".git",
+]);
+
 function collectFiles(root, prefix = "") {
   return readdir(root, { withFileTypes: true }).then((entries) =>
     Promise.all(
       entries.flatMap((entry) => {
         const entryPath = path.join(root, entry.name);
         const entryPrefix = prefix ? `${prefix}/${entry.name}` : entry.name;
-        if (entry.isDirectory()) return collectFiles(entryPath, entryPrefix);
+        if (entry.isDirectory()) {
+          if (EXCLUDED_DIRECTORIES.has(entry.name)) return [];
+          return collectFiles(entryPath, entryPrefix);
+        }
         return [{ path: entryPath, zipName: entryPrefix }];
       }),
     ),
