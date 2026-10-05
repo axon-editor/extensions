@@ -1,7 +1,31 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-05T12:32:45.596Z",
+  "generatedAt": "2026-10-05T17:44:04.749Z",
   "extensions": [
+    {
+      "id": "axon.breakout",
+      "name": "Breakout",
+      "publisher": "Axon",
+      "version": "1.0.0",
+      "description": "A classic Breakout game that runs in an Axon editor tab.",
+      "kind": "view",
+      "source": "marketplace",
+      "repositoryUrl": "https://github.com/axon-editor/axon.breakout",
+      "homepageUrl": "https://github.com/axon-editor/axon.breakout",
+      "packageUrl": "https://raw.githubusercontent.com/axon-editor/extensions/main/dist/axon.breakout-1.0.0.zip",
+      "installMode": "download",
+      "categories": [
+        "game",
+        "fun"
+      ],
+      "tags": [
+        "game",
+        "arcade"
+      ],
+      "sha256": "d629bd1da8119da3c6aabc7275b263cafc0c12566ab05bbf1266f8a3154826ba",
+      "size": 19661,
+      "readme": "# Breakout\n\nA classic Breakout arcade game that runs right inside an Axon editor tab.\n\nBounce the ball off the paddle, clear all sixty bricks, and keep your three lives.\n\n## Install\n\n1. Open the Extensions view in Axon (`⇧⌘X`).\n2. Switch to the **Downloads** tab.\n3. Find **Breakout** and press **Install**.\n4. Open the game from the Extensions view (`Open`), via the **Open Breakout**\n   command in the command palette (`⇧⌘P`), or from the game webview tab once\n   it has been opened.\n\n## Gameplay\n\n|                 |                 |\n| :-------------: | :-------------: |\n| ![game 1](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.breakout/screenshots/shot-1.png) | ![game 2](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.breakout/screenshots/shot-2.png) |\n| ![game 3](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.breakout/screenshots/shot-3.png) | ![game 4](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.breakout/screenshots/shot-4.png) |\n\n## How to play\n\n- **Move** — drag anywhere on the board, or use the arrow keys or `A` `D`\n- **Start / pause** — `Space` or `Enter`\n- Where the ball lands on the paddle decides where it goes, so the far edges are\n  the sharpest angles.\n- Each row is worth a different number of points, from **1** at the bottom to **6**\n  at the top, so clearing from the top down is worth much more than farming the\n  cheap rows.\n- The ball **speeds up** with every brick you clear, and your **paddle narrows**\n  from 96px down to 62px, so a run gets harder the further you get.\n- Letting the ball past the paddle costs a life. You have **three**.\n- Your **best score** is remembered across sessions.\n\n## Source\n\nPart of the [axon-editor/extensions](https://github.com/axon-editor/extensions/tree/main/extensions) marketplace, in the\n[axon.breakout](https://github.com/axon-editor/extensions/tree/main/extensions/axon.breakout) folder.\nPublished by the Axon Editor Group.\n"
+    },
     {
       "id": "axon.snake",
       "name": "Snake",

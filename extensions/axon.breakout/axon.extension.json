@@ -1,0 +1,23 @@
+{
+  "$schema": "https://axoneditor.com/schemas/extension/v0.1.0.json",
+  "id": "axon.breakout",
+  "name": "Breakout",
+  "publisher": "Axon",
+  "version": "1.0.0",
+  "description": "A classic Breakout game that runs in an Axon editor tab.",
+  "kind": "view",
+  "author": "Axon Editor Group",
+  "repository": "https://github.com/axon-editor/axon.breakout",
+  "homepage": "https://github.com/axon-editor/axon.breakout",
+  "categories": ["game", "fun"],
+  "tags": ["game", "arcade"],
+  "activationEvents": ["onStartup"],
+  "contributes": {
+    "commands": [
+      {
+        "id": "axon.breakout.open",
+        "title": "Open Breakout"
+      }
+    ]
+  }
+}
