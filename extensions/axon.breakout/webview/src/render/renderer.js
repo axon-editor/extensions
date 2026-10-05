@@ -60,11 +60,15 @@ export function createRenderer(canvas) {
     ctx.fillStyle = COLORS.background;
     ctx.fillRect(0, 0, cssSize, cssSize);
 
-    // A wash of violet from the top, where the wall sits, so the empty lower
+    // A wash of warmth from the top, where the wall sits, so the empty lower
     // half reads as depth rather than a flat void.
+    //
+    // The fade carries its own colour instead of being a literal here, because a
+    // hardcoded transparent tint goes stale the moment the palette changes and
+    // leaves the old hue bleeding out of the top of the board.
     const glow = ctx.createLinearGradient(0, 0, 0, cssSize);
     glow.addColorStop(0, COLORS.backdropGlow);
-    glow.addColorStop(0.65, "rgba(124, 92, 255, 0)");
+    glow.addColorStop(0.65, COLORS.backdropGlowFade);
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, cssSize, cssSize);
   }

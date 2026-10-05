@@ -68,21 +68,32 @@ export const ROW_SCORES = [1, 2, 3, 4, 5, 6];
 
 // Breakout's own palette. Deliberately disjoint from Snake's blues and reds so
 // the two games read as separate products while sharing the same visual skeleton.
+//
+// The wall is a warm coral-to-ember ramp and the background is a warm charcoal
+// rather than the cool navy it used to be. Cool brick colours on a cool board made
+// the lower rows sit almost on top of the background; warm on warm keeps every row
+// separated, and leaves the two cool accents, the mint paddle and the near-white
+// ball, as the only things on screen that are not a shade of red or orange. That is
+// what makes the ball findable at speed, since it is the one thing the player has to
+// track continuously.
 export const COLORS = {
-  background: "#0b1020",
-  backdropGlow: "rgba(124, 92, 255, 0.08)",
-  playfieldEdge: "#1b2140",
-  paddle: "#2dd4bf",
-  paddleHighlight: "#5eead4",
-  paddleGlow: "rgba(45, 212, 191, 0.4)",
-  ball: "#fbbf24",
-  ballHighlight: "#fde68a",
-  ballGlow: "rgba(251, 191, 36, 0.45)",
-  brickRow0: "#7c5cff",
-  brickRow1: "#6d5bd0",
-  brickRow2: "#5e4fb8",
-  brickRow3: "#4f4499",
-  brickRow4: "#40387a",
-  brickRow5: "#322d5c",
-  brickEdge: "rgba(255, 255, 255, 0.14)",
+  background: "#16110f",
+  backdropGlow: "rgba(255, 122, 61, 0.07)",
+  // The backdrop gradient's second stop. Kept beside backdropGlow so the fade cannot
+  // be left behind holding the palette's previous hue.
+  backdropGlowFade: "rgba(255, 122, 61, 0)",
+  playfieldEdge: "#2b1f1a",
+  paddle: "#5eead4",
+  paddleHighlight: "#99f6e4",
+  paddleGlow: "rgba(94, 234, 212, 0.4)",
+  ball: "#fdfaf5",
+  ballHighlight: "#ffffff",
+  ballGlow: "rgba(253, 250, 245, 0.5)",
+  brickRow0: "#ff8a5c",
+  brickRow1: "#f9714c",
+  brickRow2: "#e8563f",
+  brickRow3: "#c93f36",
+  brickRow4: "#a32e30",
+  brickRow5: "#7d222b",
+  brickEdge: "rgba(255, 236, 214, 0.16)",
 };

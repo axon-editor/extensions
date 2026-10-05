@@ -12,10 +12,11 @@ body {
   display: grid;
   place-items: center;
   font-family: system-ui, -apple-system, sans-serif;
-  /* Violet rather than Snake's near-black, so the two games read as different
-     products from the first pixel even though the layout is the same. */
-  background: #0b1020;
-  color: #e6edf3;
+  /* Warm charcoal rather than Snake's near-black, so the two games read as different
+     products from the first pixel even though the layout is the same. Kept in step
+     with COLORS.background by hand; the board's canvas paints over this anyway. */
+  background: #16110f;
+  color: #f5efe9;
 }
 
 .shell {
@@ -49,15 +50,15 @@ body {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #8b8fa8;
+  color: #a1908a;
 }
 
 .value {
   font-size: 22px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  /* Teal, the paddle's colour, so the HUD and the thing being tracked share a hue. */
-  color: #2dd4bf;
+  /* Mint, the paddle's colour, so the HUD and the thing being tracked share a hue. */
+  color: #5eead4;
 }
 
 .hint {
@@ -66,7 +67,7 @@ body {
   justify-content: center;
   gap: 6px;
   font-size: 12px;
-  color: #8b8fa8;
+  color: #a1908a;
 }
 
 .hint .sep {
@@ -81,11 +82,11 @@ kbd {
   height: 20px;
   padding: 0 5px;
   border-radius: 4px;
-  background: #151a33;
-  border: 1px solid #2a3157;
+  background: #241a17;
+  border: 1px solid #3d2b24;
   border-bottom-width: 2px;
   font-size: 11px;
-  color: #c9d1d9;
+  color: #e2d7cf;
 }
 
 .board-wrap {
@@ -104,8 +105,8 @@ kbd {
      a drag for scrolling, pinch zoom, or pull to refresh. */
   touch-action: none;
   border-radius: 8px;
-  background: #0b1020;
-  border: 1px solid #2a3157;
+  background: #16110f;
+  border: 1px solid #3d2b24;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 }
 
@@ -118,7 +119,7 @@ kbd {
   justify-content: center;
   gap: 12px;
   border-radius: 8px;
-  background: rgba(11, 16, 32, 0.72);
+  background: rgba(22, 17, 15, 0.72);
   backdrop-filter: blur(3px);
   /* The overlay covers the whole board and input is bound to the canvas, so without
      this it would swallow every pointer event in the idle, serving, paused, and game
@@ -131,7 +132,7 @@ kbd {
   font-size: 34px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #f3f4ff;
+  color: #fdf3ec;
 }
 
 .overlay .message {
@@ -139,7 +140,7 @@ kbd {
   margin: 0;
   text-align: center;
   font-size: 14px;
-  color: #a9aed0;
+  color: #bfa79c;
 }
 
 #start {
@@ -147,7 +148,7 @@ kbd {
   padding: 10px 28px;
   border: 0;
   border-radius: 6px;
-  background: #7c5cff;
+  background: #ff7a3d;
   color: #ffffff;
   font-size: 15px;
   font-weight: 600;
@@ -157,10 +158,10 @@ kbd {
 }
 
 #start:hover {
-  background: #8f74ff;
+  background: #ff9159;
 }
 
 #start:focus-visible {
-  outline: 2px solid #2dd4bf;
+  outline: 2px solid #5eead4;
   outline-offset: 2px;
 }

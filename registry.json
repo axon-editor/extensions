@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-05T18:59:09.907Z",
+  "generatedAt": "2026-10-05T19:37:40.725Z",
   "extensions": [
     {
       "id": "axon.breakout",
@@ -22,8 +22,8 @@
         "game",
         "arcade"
       ],
-      "sha256": "73510e0a4a80cdf91bb44c143b70b4a6232d5d569b8292860855612f171c0568",
-      "size": 20604,
+      "sha256": "8b510ecf31dd8eb20f0301fe72878e6531afc19142dd35f2f5ba285638bef804",
+      "size": 21059,
       "readme": "# Breakout\n\nA classic Breakout arcade game that runs right inside an Axon editor tab.\n\nBounce the ball off the paddle, clear all sixty bricks, and keep your three lives.\n\n## Install\n\n1. Open the Extensions view in Axon (`⇧⌘X`).\n2. Switch to the **Downloads** tab.\n3. Find **Breakout** and press **Install**.\n4. Open the game from the Extensions view (`Open`), via the **Open Breakout**\n   command in the command palette (`⇧⌘P`), or from the game webview tab once\n   it has been opened.\n\n## Gameplay\n\n|                 |                 |\n| :-------------: | :-------------: |\n| ![game 1](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.breakout/screenshots/shot-1.png) | ![game 2](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.breakout/screenshots/shot-2.png) |\n| ![game 3](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.breakout/screenshots/shot-3.png) | ![game 4](https://raw.githubusercontent.com/axon-editor/extensions/main/extensions/axon.breakout/screenshots/shot-4.png) |\n\n## How to play\n\n- **Move** — drag anywhere on the board, or use the arrow keys or `A` `D`\n- **Start / pause** — `Space` or `Enter`\n- Where the ball lands on the paddle decides where it goes, so the far edges are\n  the sharpest angles.\n- Each row is worth a different number of points, from **1** at the bottom to **6**\n  at the top, so clearing from the top down is worth much more than farming the\n  cheap rows.\n- The ball **speeds up** with every brick you clear, and your **paddle narrows**\n  from 96px down to 62px, so a run gets harder the further you get.\n- Letting the ball past the paddle costs a life. You have **three**.\n- Your **best score** is remembered across sessions.\n\n## Source\n\nPart of the [axon-editor/extensions](https://github.com/axon-editor/extensions/tree/main/extensions) marketplace, in the\n[axon.breakout](https://github.com/axon-editor/extensions/tree/main/extensions/axon.breakout) folder.\nPublished by the Axon Editor Group.\n"
     },
     {
